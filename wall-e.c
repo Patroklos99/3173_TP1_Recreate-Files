@@ -39,6 +39,11 @@ FILE *ouvrir_fichier(char *argv[]) {
     return file;
 }
 
+void ecrire_fichier(char *path, int taille) {
+    int fd = open(path, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+    write(fd, path, (size_t) taille);
+}
+
 char *creer_path(char *ligne, char *argv[]) {
     char *word = strtok(ligne, " \n\0");
     for (int i = 0; i < 2; ++i)
