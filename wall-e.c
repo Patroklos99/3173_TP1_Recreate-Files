@@ -39,10 +39,24 @@ FILE *ouvrir_fichier(char *argv[]) {
     return file;
 }
 
+void lire_file(FILE *file, char *argv[]) {
+    size_t len = 0;
+    char *ligne;
+    while ((int) (len = getline(&ligne, &len, file)) > 0) {
+        if (ligne[0] == '-')
+            creer_fregulier();
+        else if (ligne[0] == 'l')
+            creer_lsymbolique();
+        else
+            creer_repertoire();
+    }
+}
+
 int main(int argc, char ** argv) {
     valider_nb_args(argc);
     valider_dir(argv[2], DIR_MODE1);
     FILE *file = ouvrir_fichier(argv);
+    lire_file(file, argv);
     return 0;
 }
 
