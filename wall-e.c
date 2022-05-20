@@ -32,9 +32,17 @@ void valider_nb_args(int argc) {
         exit(1);
 }
 
+FILE *ouvrir_fichier(char *argv[]) {
+    FILE *file = fopen(argv[1], "r");
+    if (file == NULL)
+        exit(1);
+    return file;
+}
+
 int main(int argc, char ** argv) {
     valider_nb_args(argc);
     valider_dir(argv[2], DIR_MODE1);
+    FILE *file = ouvrir_fichier(argv);
     return 0;
 }
 
