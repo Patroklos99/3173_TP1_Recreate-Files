@@ -62,6 +62,17 @@ int obtenir_taille(const char *ligne) {
     return atoi(subbuff);
 }
 
+void creer_lsymbolique(char *ligne, char *argv[]) {
+    char teste [strlen(ligne)];
+    strcpy(teste, ligne);
+    char *path = creer_path(teste, argv);
+    struct stat buf;
+    if (lstat(path, &buf) == 0)
+        unlink(path);
+    creer_fichier_symbol(path, ligne);
+    free(path);
+}
+
 void creer_fregulier(char *ligne, char *argv[]) {
     int taille = (int) obtenir_taille(ligne);
     char *path = creer_path(ligne, argv);
