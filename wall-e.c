@@ -39,8 +39,17 @@ FILE *ouvrir_fichier(char *argv[]) {
     return file;
 }
 
+int obtenir_taille(const char *ligne) {
+    char *taille = strstr(ligne, " ") + 1;
+    int i;
+    for (i = 0; isdigit(taille[i]); i++);
+    char subbuff[i];
+    memcpy(subbuff, taille, i);
+    return atoi(subbuff);
+}
+
 void creer_fregulier(char *ligne, char *argv[]) {
-    int taille = (int) creer_taille(ligne);
+    int taille = (int) obtenir_taille(ligne);
     char *path = creer_path(ligne, argv);
     ecrire_fichier(path, taille);
     free(path);
