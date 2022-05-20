@@ -66,10 +66,7 @@ void creer_repertoire(char *ligne, char *argv[]) {
     int taille = (int) obtenir_taille(ligne);
     char *path = creer_path(ligne, argv);
     valider_dir(path, DIR_MODE2);
-    char path2[strlen(path) + 6];
-    strcpy(path2, path);
-    strcat(path2, "/test");
-    ecrire_fichier(path2, taille);
+    ecrire_fichier(path, taille);
     free(path);
 }
 
