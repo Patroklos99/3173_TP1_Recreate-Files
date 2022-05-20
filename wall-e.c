@@ -112,9 +112,9 @@ void lire_file(FILE *file, char *argv[]) {
         if (ligne[0] == '-')
             creer_fregulier(ligne, argv);
         else if (ligne[0] == 'l')
-            creer_lsymbolique();
+            creer_lsymbolique(ligne, argv);
         else
-            creer_repertoire();
+            creer_repertoire(ligne, argv);
     }
 }
 
