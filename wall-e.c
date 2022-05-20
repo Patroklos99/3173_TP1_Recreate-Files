@@ -62,6 +62,14 @@ int obtenir_taille(const char *ligne) {
     return atoi(subbuff);
 }
 
+void ecrire_fichier_symbol(char *path, char *ligne) {
+    ligne[strlen(ligne) - 1] = '\0';
+    char word [strlen(strstr(ligne, ">") + 2)];
+    memcpy(word, strstr(ligne, ">") + 2, strlen(strstr(ligne, ">") + 2));
+    if (symlink(word, path))
+        exit(1);
+}
+
 void creer_lsymbolique(char *ligne, char *argv[]) {
     char teste [strlen(ligne)];
     strcpy(teste, ligne);
@@ -69,7 +77,7 @@ void creer_lsymbolique(char *ligne, char *argv[]) {
     struct stat buf;
     if (lstat(path, &buf) == 0)
         unlink(path);
-    creer_fichier_symbol(path, ligne);
+    ecrire_fichier_symbol(path, ligne);
     free(path);
 }
 
