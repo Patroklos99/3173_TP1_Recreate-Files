@@ -39,6 +39,15 @@ FILE *ouvrir_fichier(char *argv[]) {
     return file;
 }
 
+char *creer_path(char *ligne, char *argv[]) {
+    char *word = strtok(ligne, " \n\0");
+    for (int i = 0; i < 2; ++i)
+        word = strtok(NULL, " \n\0");
+    char path[strlen(argv[2]) + strlen(word) + 2];
+    snprintf(path, sizeof(path), "%s%s%s", argv[2], "/", word);
+    return strdup(path);
+}
+
 int obtenir_taille(const char *ligne) {
     char *taille = strstr(ligne, " ") + 1;
     int i;
