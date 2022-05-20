@@ -9,10 +9,19 @@
  *      Groupe : 40
  */
  
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <ctype.h>
+
 const int DIR_MODE1 = 0700;
 const int DIR_MODE2 = 0755;
 
-void valider_dir2(char *path,const int dir_mode) {
+void valider_dir(char *path,const int dir_mode) {
     struct stat st = {0};
     if (stat(path, &st) == -1) {
         if (mkdir(path, dir_mode) != 0)
