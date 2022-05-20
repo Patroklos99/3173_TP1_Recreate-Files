@@ -39,12 +39,19 @@ FILE *ouvrir_fichier(char *argv[]) {
     return file;
 }
 
+void creer_fregulier(char *ligne, char *argv[]) {
+    int taille = (int) creer_taille(ligne);
+    char *path = creer_path(ligne, argv);
+    ecrire_fichier(path, taille);
+    free(path);
+}
+
 void lire_file(FILE *file, char *argv[]) {
     size_t len = 0;
     char *ligne;
     while ((int) (len = getline(&ligne, &len, file)) > 0) {
         if (ligne[0] == '-')
-            creer_fregulier();
+            creer_fregulier(ligne, argv);
         else if (ligne[0] == 'l')
             creer_lsymbolique();
         else
