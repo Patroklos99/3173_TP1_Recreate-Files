@@ -9,7 +9,32 @@
  *      Groupe : 40
  */
  
+const int DIR_MODE1 = 0700;
+const int DIR_MODE2 = 0755;
+
+void valider_dir2(char *path,const int dir_mode) {
+    struct stat st = {0};
+    if (stat(path, &st) == -1) {
+        if (mkdir(path, dir_mode) != 0)
+            exit(1);
+    } else if (dir_mode == DIR_MODE2 && stat(path, &st) == 0)
+        exit(1);
+}
+
+/*
+* Valide le nb arguments recus par le programme. Affiche l'erreur correspndate et arrête le programme s'il y a plus
+* qu'un argument valide
+*
+* @param argc nb d'arguments.
+* */
+void valider_nb_args(int argc) {
+    if (argc != 3)
+        exit(1);
+}
+
 int main(int argc, char ** argv) {
+    valider_nb_args(argc);
+    valider_dir(argv[2], DIR_MODE1);
     return 0;
 }
 
