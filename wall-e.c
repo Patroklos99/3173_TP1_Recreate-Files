@@ -16,7 +16,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
-
+#include <errno.h>
+#include <limits.h>
 
 const int DIR_MODE1 = 0700;  //Mode des droits complets pour l'usager seulement.
 const int DIR_MODE2 = 0755;  //Mode demandé dans le TP.
@@ -27,14 +28,12 @@ const int ARG_2 = 2;  //2 argument passé au programme
  * validation des repertoires, arrete le programme lorsque validation correspondante precise.
  *
  * @param chemin pointeur vers le chemin a ecrire
- * @param argv pointeur vers les arguments.
+ * @param dir_mode mode pour valider les conditions if respectives.
  */
 void valider_dir(char *chemin, const int dir_mode) {
-    struct stat st = {0};
-    if (stat(chemin, &st) == -1) {
-        if (mkdir(chemin, dir_mode) != 0)
-            exit(1);
-    } else if (dir_mode == DIR_MODE2 && stat(chemin, &st) == 0)
+    if (dir_mode == DIR_MODE1 && mkdir(chemin, dir_mode) == -1 && errno != EEXIST)
+        exit(1);
+    if (dir_mode == DIR_MODE2 && mkdir(chemin, dir_mode) != 0)
         exit(1);
 }
 
@@ -61,9 +60,23 @@ FILE *ouvrir_fichier(char *argv[]) {
 }
 
 /**
+ * Valide lutilisation de la function strtol.
+ *
+ * @param i taille en type entier.
+ */
+int valider_strtol(char *sub_tampon) {
+    char *ptr;
+    long numero = strtol(sub_tampon, &ptr, 10);
+    if (numero == LONG_MIN || numero == LONG_MAX)
+        exit(1);
+    else
+        return (int) numero;
+}
+
+/**
  * Obtient la taille dun fichier. Regulier, repertoire ou symbolique
  *
- * @param ligne pointeur vers la ligne lu a manipuler.
+ * @param i taille en type entier.
  */
 int obtenir_taille(const char *ligne) {
     char *taille = strstr(ligne, " ") + 1; //Deplacer le pointeur de +1 charactere après l'espace.
@@ -71,7 +84,7 @@ int obtenir_taille(const char *ligne) {
     for (i = 0; isdigit(taille[i]); i++);
     char sub_tampon[i];
     memcpy(sub_tampon, taille, i);
-    return atoi(sub_tampon);
+    return valider_strtol(sub_tampon);
 }
 
 /**
@@ -97,9 +110,9 @@ char *creer_path(char *ligne, char *argv[]) {
  */
 void ecrire_fichier_symbol(char *chemin, char *ligne) {
     ligne[strlen(ligne) - 1] = '\0';
-    char mot [strlen(strstr(ligne, ">") + 2)]; //Deplacer le pointeur de +2 characteres après le charctere > vers le 1er charactere du mot suivant.
+    char mot[strlen(strstr(ligne, ">") +2)]; //Deplacer le pointeur de +2 characteres après le charctere > vers le 1er charactere du mot suivant.
     memcpy(mot, strstr(ligne, ">") + 2, strlen(strstr(ligne, ">") + 2));
-    if (symlink(mot, chemin))
+    if (symlink(mot, chemin) != 0)
         exit(1);
 }
 
@@ -112,6 +125,8 @@ void ecrire_fichier_symbol(char *chemin, char *ligne) {
 void ecrire_fichier(char *chemin, int taille) {
     int fd = open(chemin, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
     write(fd, chemin, (size_t) taille);
+    if (close(fd) == -1)
+        exit(1);
 }
 
 /**
@@ -121,10 +136,8 @@ void ecrire_fichier(char *chemin, int taille) {
  * @param argv pointeur contenant les arguments.
  */
 void creer_repertoire(char *ligne, char *argv[]) {
-    int taille = (int) obtenir_taille(ligne);
     char *chemin = creer_path(ligne, argv);
     valider_dir(chemin, DIR_MODE2);
-    ecrire_fichier(chemin, taille);
     free(chemin);
 }
 
@@ -135,12 +148,13 @@ void creer_repertoire(char *ligne, char *argv[]) {
  * @param argv pointeur contenant les arguments.
  */
 void creer_lsymbolique(char *ligne, char *argv[]) {
-    char ligne_copie [strlen(ligne)];
+    char ligne_copie[strlen(ligne)];
     strcpy(ligne_copie, ligne);
     char *chemin = creer_path(ligne_copie, argv);
     struct stat tampon;
     if (lstat(chemin, &tampon) == 0)
-        unlink(chemin);
+        if (unlink(chemin) == -1)
+            exit(1);
     ecrire_fichier_symbol(chemin, ligne);
     free(chemin);
 }
@@ -188,6 +202,7 @@ int main(int argc, char *argv[]) {
     valider_dir(argv[ARG_2], DIR_MODE1);
     FILE *file = ouvrir_fichier(argv);
     lire_file(file, argv);
+    fclose(file);
     return 0;
 }
 
