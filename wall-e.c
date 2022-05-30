@@ -65,7 +65,7 @@ FILE *ouvrir_fichier(char *argv[]) {
  * @param i taille en type entier.
  */
 int valider_strtol(char *sub_tampon) {
-    char *ptr;
+    char *ptr = NULL;
     long numero = strtol(sub_tampon, &ptr, 10);
     if (numero == LONG_MIN || numero == LONG_MAX)
         exit(1);
@@ -80,8 +80,8 @@ int valider_strtol(char *sub_tampon) {
  */
 int obtenir_taille(const char *ligne) {
     char *taille = strstr(ligne, " ") + 1; //Deplacer le pointeur de +1 charactere après l'espace.
-    int i;
-    for (i = 0; isdigit(taille[i]); i++);
+    int i = 0;
+    for (; isdigit(taille[i]) != 0; i++);
     char sub_tampon[i];
     memcpy(sub_tampon, taille, i);
     return valider_strtol(sub_tampon);
@@ -136,7 +136,8 @@ void ecrire_fichier(char *chemin, int taille) {
  * @param argv pointeur contenant les arguments.
  */
 void creer_repertoire(char *ligne, char *argv[]) {
-    char *chemin = creer_path(ligne, argv);
+    char *chemin = NULL;
+    chemin = creer_path(ligne, argv);
     valider_dir(chemin, DIR_MODE2);
     free(chemin);
 }
@@ -150,7 +151,8 @@ void creer_repertoire(char *ligne, char *argv[]) {
 void creer_lsymbolique(char *ligne, char *argv[]) {
     char ligne_copie[strlen(ligne)];
     strcpy(ligne_copie, ligne);
-    char *chemin = creer_path(ligne_copie, argv);
+    char *chemin = NULL;
+    chemin = creer_path(ligne_copie, argv);
     struct stat tampon;
     if (lstat(chemin, &tampon) == 0)
         if (unlink(chemin) == -1)
@@ -167,7 +169,8 @@ void creer_lsymbolique(char *ligne, char *argv[]) {
  */
 void creer_fregulier(char *ligne, char *argv[]) {
     int taille = (int) obtenir_taille(ligne);
-    char *chemin = creer_path(ligne, argv);
+    char *chemin = NULL;
+    chemin = creer_path(ligne, argv);
     ecrire_fichier(chemin, taille);
     free(chemin);
 }
@@ -180,7 +183,7 @@ void creer_fregulier(char *ligne, char *argv[]) {
  */
 void lire_file(FILE *file, char *argv[]) {
     size_t len = 0;
-    char *ligne;
+    char *ligne = NULL;
     while ((int) (len = getline(&ligne, &len, file)) > 0) {
         if (ligne[0] == '-')
             creer_fregulier(ligne, argv);
@@ -189,6 +192,7 @@ void lire_file(FILE *file, char *argv[]) {
         else
             creer_repertoire(ligne, argv);
     }
+    free(ligne);
 }
 
 /**
