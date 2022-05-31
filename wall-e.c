@@ -23,6 +23,7 @@ const int DIR_MODE1 = 0700;  //Mode des droits complets pour l'usager seulement.
 const int DIR_MODE2 = 0755;  //Mode demandé dans le TP.
 const int ARG_1 = 1;  //1 argument passé au programme
 const int ARG_2 = 2;  //2 argument passé au programme
+const int LONGUEUR_MAX = 255; //longueur max permise pour fichier,lien, repertoire par linux.
 
 /**
  * validation des repertoires, arrete le programme lorsque validation correspondante precise.
@@ -101,9 +102,14 @@ int obtenir_taille(const char *ligne) {
     return valider_strtol(sub_tampon);
 }
 
+/**
+ * Verifie la longueur du fichier,repertoire ou lien symbolique. Arrete le programme
+ * si plus grand que longueur max permise dans linux 255.
+ *
+ * @param mot mot a verifier.
+ */
 void verifierlongueur(char *mot) {
-    unsigned long a = strlen(mot);
-    if (strlen(mot) > 255)
+    if (strlen(mot) > LONGUEUR_MAX)
         exit(1);
 }
 
