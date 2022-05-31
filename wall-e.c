@@ -131,7 +131,8 @@ char *creer_path(char *ligne, char *argv[]) {
  */
 void ecrire_fichier_symbol(char *chemin, char *ligne) {
     ligne[strlen(ligne) - 1] = '\0';
-    char mot[strlen(strstr(ligne, ">") +2)]; //Deplacer le pointeur de +2 characteres après le charctere > vers le 1er charactere du mot suivant.
+    char mot[strlen(strstr(ligne, ">") +
+                    2)]; //Deplacer le pointeur de +2 characteres après le charctere > vers le 1er charactere du mot suivant.
     memcpy(mot, strstr(ligne, ">") + 2, strlen(strstr(ligne, ">") + 2));
     if (symlink(mot, chemin) != 0)
         exit(1);
@@ -212,6 +213,10 @@ void lire_file(FILE *file, char *argv[]) {
             creer_lsymbolique(ligne, argv);
         else if (ligne[0] == 'd')
             creer_repertoire(ligne, argv, file);
+        else {
+            free(ligne);
+            exit(1);
+        }
     }
     free(ligne);
 }
