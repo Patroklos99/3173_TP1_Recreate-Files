@@ -29,11 +29,25 @@ const int ARG_2 = 2;  //2 argument passé au programme
  *
  * @param chemin pointeur vers le chemin a ecrire
  * @param dir_mode mode pour valider les conditions if respectives.
+ * @param file pointeur vers fichier a liberer.
+ */
+void valider_dir2(char *chemin, const int dir_mode, char *ligne, FILE *file) {
+    if (dir_mode == DIR_MODE2 && mkdir(chemin, dir_mode) != 0) {
+        free(ligne);
+        free(chemin);
+        free(file);
+        exit(1);
+    }
+}
+
+/**
+ * validation des repertoires, arrete le programme lorsque validation correspondante precise.
+ *
+ * @param chemin pointeur vers le chemin a ecrire
+ * @param dir_mode mode pour valider les conditions if respectives.
  */
 void valider_dir(char *chemin, const int dir_mode) {
     if (dir_mode == DIR_MODE1 && mkdir(chemin, dir_mode) == -1 && errno != EEXIST)
-        exit(1);
-    if (dir_mode == DIR_MODE2 && mkdir(chemin, dir_mode) != 0)
         exit(1);
 }
 
@@ -87,6 +101,12 @@ int obtenir_taille(const char *ligne) {
     return valider_strtol(sub_tampon);
 }
 
+void verifierlongueur(char *mot) {
+    unsigned long a = strlen(mot);
+    if (strlen(mot) > 255)
+        exit(1);
+}
+
 /**
  * Cree un string dun chemin desiré
  *
@@ -97,6 +117,7 @@ char *creer_path(char *ligne, char *argv[]) {
     char *mot = strtok(ligne, " \n\0");
     for (int i = 0; i < 2; ++i)
         mot = strtok(NULL, " \n\0");
+    verifierlongueur(mot);
     char chemin[strlen(argv[ARG_2]) + strlen(mot) + 2]; //+2 pour les characteres "/" et \0 (fin de ligne)
     snprintf(chemin, sizeof(chemin), "%s%s%s", argv[2], "/", mot);
     return strdup(chemin);
@@ -135,10 +156,10 @@ void ecrire_fichier(char *chemin, int taille) {
  * @param ligne pointeur vers la ligne lu a manipuler.
  * @param argv pointeur contenant les arguments.
  */
-void creer_repertoire(char *ligne, char *argv[]) {
+void creer_repertoire(char *ligne, char *argv[], FILE *file) {
     char *chemin = NULL;
     chemin = creer_path(ligne, argv);
-    valider_dir(chemin, DIR_MODE2);
+    valider_dir2(chemin, DIR_MODE2, ligne, file);
     free(chemin);
 }
 
@@ -189,8 +210,8 @@ void lire_file(FILE *file, char *argv[]) {
             creer_fregulier(ligne, argv);
         else if (ligne[0] == 'l')
             creer_lsymbolique(ligne, argv);
-        else
-            creer_repertoire(ligne, argv);
+        else if (ligne[0] == 'd')
+            creer_repertoire(ligne, argv, file);
     }
     free(ligne);
 }
