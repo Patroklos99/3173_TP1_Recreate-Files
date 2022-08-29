@@ -2,6 +2,30 @@
 
 L'objectif du TP0 est de développer l'utilitaire `wall-e` qui lit un fichier au format `stat` et recréé les fichiers, les répertoires et liens symboliques de ce fichier.
 
+
+<summary>Exemple</summary>
+
+<pre>
+<b>iam@groot:~/$</b> ls tests/
+output.stat
+<b>iam@groot:~/$</b> cat tests/output.stat
+lrwxrwxrwx 6 lien -> loulou
+-rw-rw-r-- 0 loulou
+-rw-rw-r-- 416 biblo.c
+drwxrwxr-x 4096 rep
+<b>iam@groot:~/$</b> ./wall-e tests/output.stat tests/ici 
+<b>iam@groot:~/$</b> ls tests/
+ici  output.stat
+<b>iam@groot:~/$</b> ls -l tests/ici
+total 8
+-rw-r--r-- 1 iam groot  416 mai 10 19:08 biblo.c
+lrwxrwxrwx 1 iam groot    6 mai 10 19:08 lien -> loulou
+-rw-r--r-- 1 iam groot    0 mai 10 19:08 loulou
+drwxr-xr-x 2 iam groot 4096 mai 10 19:08 rep
+</pre>
+Notez que les droits des fichiers et des répertoires ne sont pas maintenus. Autrement dit, on ignore les permissions dans le fichier `.stat`.
+
+
 ## Avant de commencer
 
 * Cloner (le bouton `fork` en haut à droite) ce dépôt sur le gitlab départemental.
